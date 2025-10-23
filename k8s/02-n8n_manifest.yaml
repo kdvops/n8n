@@ -1,0 +1,119 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: n8n
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: n8n-config
+  namespace: n8n
+  labels:
+    app: n8n
+# Ajusta las variables según Opción A (dominio raíz) o B (subruta)
+data:
+  # Zona horaria
+  GENERIC_TIMEZONE: America/Santo_Domingo
+  NODE_ENV: production
+  N8N_DIAGNOSTICS_ENABLED: "false"
+  N8N_PAYLOAD_SIZE_MAX: "64"  # MB
+  N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE: "true"
+  # ===== n8n en dominio raíz (https://n8n.kdvops.com) =====
+  N8N_HOST: n8n.kdvops.com
+  N8N_PROTOCOL: https
+  WEBHOOK_URL: https://n8n.kdvops.com
+  N8N_EDITOR_BASE_URL: https://n8n.kdvops.com
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n
+  namespace: n8n
+  labels:
+    app: n8n
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: n8n
+  template:
+    metadata:
+      labels:
+        app: n8n
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - rasppi516
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: n8n
+          image: n8nio/n8n:latest
+          #image: silencfox/n7n:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5678
+          envFrom:
+            - configMapRef:
+                name: n8n-config
+            - secretRef:
+                name: n8n-secrets
+          volumeMounts:
+            - name: data
+              mountPath: /home/node/.n8n
+          #readinessProbe:
+          #  httpGet:
+          #    path: /healthz
+          #    port: 5678
+          #  initialDelaySeconds: 20
+          #  periodSeconds: 10
+          #  timeoutSeconds: 3
+          #  failureThreshold: 6
+          #livenessProbe:
+          #  httpGet:
+          #    path: /healthz
+          #    port: 5678
+          #  initialDelaySeconds: 40
+          #  periodSeconds: 20
+          #  timeoutSeconds: 3
+          #  failureThreshold: 6
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: n8n-data
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: n8n
+  namespace: n8n
+  labels:
+    app: n8n
+spec:
+  selector:
+    app: n8n
+  ports:
+    - name: http
+      port: 5678
+      targetPort: 5678
+      protocol: TCP
+  type: ClusterIP
+

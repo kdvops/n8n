@@ -1,0 +1,117 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: n8n-postgres
+    environment:
+      POSTGRES_USER: n8n
+      POSTGRES_PASSWORD: ${n8npass}
+      POSTGRES_DB: n8n
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U n8n -d n8n || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: n8n-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - ./data/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  n8n:
+    image: n8nio/n8n:latest # Sugerido: fija una versión estable, p.ej. n8nio/n8n:1.76.1
+    container_name: n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "5678:5678"
+    environment:
+      # --- Base ---
+      N8N_HOST: localhost           # Cambia por tu dominio o IP
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http            # https si usas proxy TLS
+      WEBHOOK_URL: http://localhost # URL pública final (con http/https y puerto si aplica)
+      GENERIC_TIMEZONE: America/Santo_Domingo
+
+      # --- Seguridad ---
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}  # genera uno y ponlo en .env
+
+      # --- Base de datos (Postgres) ---
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: n8n
+      DB_POSTGRESDB_USER: n8n
+      DB_POSTGRESDB_PASSWORD: ${n8npass}
+
+      # --- Ejecuciones en cola (Redis/Bull) ---
+      EXECUTIONS_MODE: queue
+      QUEUE_BULL_REDIS_HOST: redis
+      QUEUE_BULL_REDIS_PORT: 6379
+      QUEUE_BULL_REDIS_DB: 0
+
+      # --- Opcionales útiles ---
+      # N8N_LOG_LEVEL: info
+      # N8N_DIAGNOSTICS_ENABLED: false
+      # N8N_SECURE_COOKIE: true
+      # N8N_DISABLE_PRODUCTION_MAIN_PROCESS: false
+
+      # --- Correo saliente (opcional para credenciales y notifs) ---
+      # N8N_EMAIL_MODE: smtp
+      # N8N_SMTP_HOST: smtp.tu-servidor.com
+      # N8N_SMTP_PORT: 587
+      # N8N_SMTP_USER: usuario
+      # N8N_SMTP_PASS: password
+      # N8N_SMTP_SENDER: "n8n <n8n@tu-dominio.com>"
+    volumes:
+      - ./data/n8n:/home/node/.n8n
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:5678/healthz || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  n8n-worker:
+    image: n8nio/n8n:latest # fija la misma versión que el servicio n8n
+    container_name: n8n-worker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      GENERIC_TIMEZONE: America/Santo_Domingo
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: n8n
+      DB_POSTGRESDB_USER: n8n
+      DB_POSTGRESDB_PASSWORD: ${n8npass}
+
+      EXECUTIONS_MODE: queue
+      QUEUE_BULL_REDIS_HOST: redis
+      QUEUE_BULL_REDIS_PORT: 6379
+      QUEUE_BULL_REDIS_DB: 0
+    command: ["n8n", "worker"]
+    restart: unless-stopped
+
+#volumes:
+  # (definidos como bind arriba para que veas las rutas locales)
