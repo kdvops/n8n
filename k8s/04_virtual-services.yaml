@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: n8n-vs
+  namespace: n8n
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: n8n.kdvops.com
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "true"
+spec:
+  hosts:
+  - "n8n.kdvops.com"
+  gateways:
+  - istio-system/kdvops-gateway
+  http:
+  - route:
+    - destination:
+        host: kdvops-web-svc
+        port:
+          number: 80
