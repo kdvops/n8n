@@ -24,6 +24,9 @@ data:
   N8N_PROTOCOL: https
   WEBHOOK_URL: https://n8n.kdvops.com
   N8N_EDITOR_BASE_URL: https://n8n.kdvops.com
+  # ===== Métricas Prometheus =====
+  N8N_METRICS: "true"
+  N8N_METRICS_PREFIX: "n8n"
 
 ---
 apiVersion: apps/v1
