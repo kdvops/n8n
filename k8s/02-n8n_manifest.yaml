@@ -27,7 +27,7 @@ data:
   # ===== Métricas Prometheus =====
   N8N_METRICS: "true"
   N8N_METRICS_PREFIX: "n8n"
-
+  N8N_METRICS_INCLUDE_DEFAULT_METRICS: "true"
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
