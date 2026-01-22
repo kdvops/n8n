@@ -30,3 +30,15 @@ spec:
   trafficPolicy:
     tls:
       mode: ISTIO_MUTUAL      # DISABLE |  ISTIO_MUTUAL | SIMPLE
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: db-no-mtls
+  namespace: n8n
+spec:
+  host: postgres.n8n.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: DISABLE
