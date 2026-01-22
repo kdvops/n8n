@@ -16,4 +16,4 @@ spec:
   host: n8n
   trafficPolicy:
     tls:
-      mode: SIMPLE   # DISABLE |  ISTIO_MUTUAL | SIMPLE
+      mode: DISABLE   # DISABLE |  ISTIO_MUTUAL | SIMPLE
