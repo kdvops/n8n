@@ -61,6 +61,11 @@ spec:
     metadata:
       labels:
         app: n8n
+      annotations:
+        sidecar.istio.io/inject: "true"
+        traffic.sidecar.istio.io/excludeInboundPorts: "5678"
+        traffic.sidecar.istio.io/excludeOutboundPorts: "5432"
+    
     spec:
       affinity:
         nodeAffinity:
