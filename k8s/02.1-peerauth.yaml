@@ -13,7 +13,7 @@ metadata:
   name: n8n
   namespace: n8n
 spec:
-  host: n8n
+  host: n8n.n8n.svc.cluster.local
   trafficPolicy:
     tls:
       mode: ISTIO_MUTUAL      # DISABLE |  ISTIO_MUTUAL | SIMPLE
