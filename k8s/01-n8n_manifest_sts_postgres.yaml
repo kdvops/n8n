@@ -83,7 +83,7 @@ spec:
         name: data
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: standard   # ajusta según tu cluster
+        storageClassName: longhorn   # ajusta según tu cluster
         resources:
           requests:
             storage: 10Gi
