@@ -6,14 +6,14 @@ metadata:
 spec:
   mtls:
     mode: STRICT  # PERMISSIVE | STRICT
-#---
-#apiVersion: networking.istio.io/v1beta1
-#kind: DestinationRule
-#metadata:
-#  name: n8n
-#  namespace: n8n
-#spec:
-#  host: n8n
-#  trafficPolicy:
-#    tls:
-#      mode: SIMPLE   # DISABLE |  ISTIO_MUTUAL | SIMPLE
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: n8n
+  namespace: n8n
+spec:
+  host: n8n
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL      # DISABLE |  ISTIO_MUTUAL | SIMPLE
