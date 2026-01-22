@@ -5,7 +5,7 @@ metadata:
   namespace: n8n
 spec:
   mtls:
-    mode: PERMISSIVE
+    mode: STRICT  # PERMISSIVE | STRICT
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
