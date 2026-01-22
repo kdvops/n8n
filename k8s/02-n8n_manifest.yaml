@@ -89,6 +89,8 @@ spec:
                 name: n8n-config
             - secretRef:
                 name: n8n-secrets
+            - secretRef:
+                name: n8n-db-secret
 
           volumeMounts:
             - name: data
