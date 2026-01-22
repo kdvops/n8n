@@ -35,6 +35,7 @@ spec:
     metadata:
       labels:
         app: postgres
+        version: "latest"
       annotations:
         sidecar.istio.io/inject: "true"
         #traffic.sidecar.istio.io/excludeInboundPorts: "5432"
