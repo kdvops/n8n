@@ -38,6 +38,7 @@ metadata:
   namespace: n8n
   labels:
     app: n8n
+    version: "2.4.5"
 spec:
   replicas: 1
 
