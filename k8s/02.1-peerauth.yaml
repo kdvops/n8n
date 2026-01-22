@@ -7,19 +7,6 @@ spec:
   mtls:
     mode: STRICT  # PERMISSIVE | STRICT
 ---
-apiVersion: security.istio.io/v1beta1
-kind: PeerAuthentication
-metadata:
-  name: db-disable-mtls
-  namespace: n8n
-spec:
-  selector:
-    matchLabels:
-      app: postgres
-  mtls:
-    mode: DISABLE
-
----
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
 metadata:
@@ -31,6 +18,18 @@ spec:
     tls:
       mode: ISTIO_MUTUAL      # DISABLE |  ISTIO_MUTUAL | SIMPLE
 
+---
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: db-disable-mtls
+  namespace: n8n
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  mtls:
+    mode: DISABLE
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
