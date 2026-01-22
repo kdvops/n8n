@@ -35,6 +35,10 @@ spec:
     metadata:
       labels:
         app: postgres
+      annotations:
+        sidecar.istio.io/inject: "true"
+        traffic.sidecar.istio.io/excludeInboundPorts: "5432"
+        traffic.sidecar.istio.io/excludeOutboundPorts: "5432"
     spec:
       securityContext:
         fsGroup: 999
