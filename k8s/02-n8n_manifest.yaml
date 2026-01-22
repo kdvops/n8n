@@ -63,7 +63,7 @@ spec:
         app: n8n
       annotations:
         sidecar.istio.io/inject: "true"
-        traffic.sidecar.istio.io/excludeInboundPorts: "5678,443,80"
+        #traffic.sidecar.istio.io/excludeInboundPorts: "5678,443,80"
         traffic.sidecar.istio.io/excludeOutboundPorts: "5432"
     
     spec:
