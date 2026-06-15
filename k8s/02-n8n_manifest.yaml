@@ -85,7 +85,8 @@ spec:
 
       containers:
         - name: n8n
-          image: n8nio/n8n:2.20.11
+          #image: n8nio/n8n:2.20.11
+          image: n8nio/n8n:2.26.3
           imagePullPolicy: Always
 
           ports:
