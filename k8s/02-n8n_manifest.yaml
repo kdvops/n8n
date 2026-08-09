@@ -100,6 +100,12 @@ spec:
             - secretRef:
                 name: n8n-db-secret
 
+          env:
+            # Force the stable headless Service instead of the pod-specific DNS name.
+            # The credential values still come from n8n-db-secret.
+            - name: DB_POSTGRESDB_HOST
+              value: postgres
+
           volumeMounts:
             - name: data
               mountPath: /home/node/.n8n
@@ -135,4 +141,3 @@ spec:
       targetPort: 5678
       protocol: TCP
   type: ClusterIP
-
